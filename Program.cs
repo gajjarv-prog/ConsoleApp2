@@ -1,102 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ConsoleApp2;
+using Microsoft.EntityFrameworkCore;
 
-namespace ConsoleApp2
+var context = new AppDbContext();
+// Ensure database schema is up-to-date with the migrations
+context.Database.Migrate();
+
+TestDatabase();
+
+void TestDatabase()
 {
-	internal class Program
+	// List all users first
+	ListAllUsers();
+
+	// Add a new user
+	AddUser();
+	ListAllUsers();
+
+	// Update a user
+	UpdateUser();
+	ListAllUsers();
+
+	// Delete a user
+	DeleteUser();
+	ListAllUsers();
+}
+
+void ListAllUsers()
+{
+	Console.WriteLine("\n--- All Users ---");
+	var users = context.Users.ToList();
+	foreach (var user in users)
 	{
-		// ── Simple User ──────────────────────
-		class User
-		{
-			public int Id;
-			public string Name;
-			public string Email;
-		}
+		Console.WriteLine($"Id: {user.Id}, Name: {user.Name}, Email: {user.EmailAddress}, Phone: {user.PhoneNumber}");
+	}
+}
 
-		// ── "Database" ────────────────────────
-		static List<User> users = new List<User>();
-		static int nextId = 1;
+void AddUser()
+{
+	Console.WriteLine("\n--- Adding New User ---");
+	var newUser = new User
+	{
+		Name = "David Brown",
+		EmailAddress = "david@email.com",
+		PhoneNumber = "555-4444"
+	};
+	context.Users.Add(newUser);
+	context.SaveChanges();
+	Console.WriteLine("User added!");
+}
 
-		// ── 1. LIST ───────────────────────────
-		static void ListUsers()
-		{
-			Console.WriteLine("\n--- Current Users ---");
+void UpdateUser()
+{
+	Console.WriteLine("\n--- Updating User ---");
+	var user = context.Users.FirstOrDefault(u => u.Name == "David Brown");
+	if (user != null)
+	{
+		user.PhoneNumber = "555-9999";
+		context.SaveChanges();
+		Console.WriteLine("User updated!");
+	}
+}
 
-			if (users.Count == 0)
-			{
-				Console.WriteLine("No users found.");
-				return;
-			}
-
-			for (var i = 0; i < users.Count; i++)
-				Console.WriteLine($"ID: {users[i].Id}  Name: {users[i].Name}  Email: {users[i].Email}");
-		}
-
-		// ── 2. ADD ────────────────────────────
-		static void AddUser(string name, string email)
-		{
-			var user = new User { Id = nextId++, Name = name, Email = email };
-			users.Add(user);
-			Console.WriteLine($"Added: {name}");
-		}
-
-		// ── 3. UPDATE ─────────────────────────
-		static void UpdateUser(int id, string newName, string newEmail)
-		{
-			for (var i = 0; i < users.Count; i++)
-			{
-				if (users[i].Id == id)
-				{
-					users[i].Name = newName;
-					users[i].Email = newEmail;
-					Console.WriteLine($"Updated ID {id} to {newName}");
-					return;
-				}
-			}
-			Console.WriteLine($"User ID {id} not found.");
-		}
-
-		// ── 4. DELETE ─────────────────────────
-		static void DeleteUser(int id)
-		{
-			for (var i = 0; i < users.Count; i++)
-			{
-				if (users[i].Id == id)
-				{
-					users.RemoveAt(i);
-					Console.WriteLine($"Deleted ID {id}");
-					return;
-				}
-			}
-			Console.WriteLine($"User ID {id} not found.");
-		}
-
-		// ── 5. TEST DATABASE ──────────────────
-		static void TestDatabase()
-		{
-			Console.WriteLine("=== TestDatabase Start ===");
-
-			ListUsers();                            // empty
-
-			AddUser("Varun", "varun@example.com");
-			AddUser("Vasim", "vasim@example.com");
-			AddUser("Precious", "precious@example.com");
-			AddUser("Hardi", "hardi@example.com");
-			ListUsers();                            // after add
-
-			UpdateUser(2, "Vasim Khan", "vasimkhan@example.com");
-			ListUsers();                            // after update
-
-			DeleteUser(1);
-			ListUsers();                            // after delete
-
-			Console.WriteLine("\n=== TestDatabase Complete ===");
-		}
-
-		// ── Main ──────────────────────────────
-		static void Main(string[] args)
-		{
-			TestDatabase();
-		}
+void DeleteUser()
+{
+	Console.WriteLine("\n--- Deleting User ---");
+	var user = context.Users.FirstOrDefault(u => u.Name == "David Brown");
+	if (user != null)
+	{
+		context.Users.Remove(user);
+		context.SaveChanges();
+		Console.WriteLine("User deleted!");
 	}
 }
