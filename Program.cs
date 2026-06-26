@@ -1,9 +1,6 @@
 ﻿using ConsoleApp2;
-using Microsoft.EntityFrameworkCore;
 
 var context = new AppDbContext();
-// Ensure database schema is up-to-date with the migrations
-context.Database.Migrate();
 
 TestDatabase();
 
@@ -40,9 +37,9 @@ void AddUser()
 	Console.WriteLine("\n--- Adding New User ---");
 	var newUser = new User
 	{
-		Name = "David Brown",
-		EmailAddress = "david@email.com",
-		PhoneNumber = "555-4444"
+		Name = "Vaishnavi Gajjar",
+		EmailAddress = "vishu@email.com",
+		PhoneNumber = "123-235-4444"
 	};
 	context.Users.Add(newUser);
 	context.SaveChanges();
@@ -52,10 +49,10 @@ void AddUser()
 void UpdateUser()
 {
 	Console.WriteLine("\n--- Updating User ---");
-	var user = context.Users.FirstOrDefault(u => u.Name == "David Brown");
+	var user = context.Users.FirstOrDefault(u => u.Name == "Vaishnavi Gajjar");
 	if (user != null)
 	{
-		user.PhoneNumber = "555-9999";
+		user.PhoneNumber = "555-999-1234";
 		context.SaveChanges();
 		Console.WriteLine("User updated!");
 	}
@@ -64,7 +61,7 @@ void UpdateUser()
 void DeleteUser()
 {
 	Console.WriteLine("\n--- Deleting User ---");
-	var user = context.Users.FirstOrDefault(u => u.Name == "David Brown");
+	var user = context.Users.FirstOrDefault(u => u.Name == "Vaishnavi Gajjar");
 	if (user != null)
 	{
 		context.Users.Remove(user);
